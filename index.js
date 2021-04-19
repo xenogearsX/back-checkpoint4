@@ -10,4 +10,8 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.listen(3000, () => console.log('Express server is running'))
+app.use('/products', routes.products)
+app.use('/types', routes.types)
+app.use('/typegroups', routes.typegroups)
+
+app.listen(3030, () => console.log('Express server is running'))
