@@ -3,14 +3,17 @@ const connection = require('../config')
 const router = express.Router()
 
 router.get('/', (req, res) => {
-  connection.query('SELECT * from product', (err, results) => {
-    if (err) {
-      console.log(err)
-      res.status(500).send('Error retrieving data')
-    } else {
-      res.status(200).json(results)
+  connection.query(
+    'SELECT * from product P JOIN type T ON T.idtype = P.type_idtype',
+    (err, results) => {
+      if (err) {
+        console.log(err)
+        res.status(500).send('Error retrieving data')
+      } else {
+        res.status(200).json(results)
+      }
     }
-  })
+  )
 })
 
 router.get('/:id', (req, res) => {
