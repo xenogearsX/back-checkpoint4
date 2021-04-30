@@ -80,4 +80,19 @@ router.put('/:id', (req, res) => {
   )
 })
 
+router.delete('/:id', (req, res) => {
+  connection.query(
+    'DELETE FROM type WHERE idtype = ?',
+    [req.params.id],
+    err => {
+      if (err) {
+        console.log(err)
+        res.status(500).send('Error deleting data')
+      } else {
+        res.status(200).send('Type successfully deleted !')
+      }
+    }
+  )
+})
+
 module.exports = router

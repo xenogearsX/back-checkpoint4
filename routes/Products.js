@@ -149,4 +149,19 @@ router.put('/:id', (req, res) => {
   )
 })
 
+router.delete('/:id', (req, res) => {
+  connection.query(
+    'DELETE FROM product WHERE idproduct = ?',
+    [req.params.id],
+    err => {
+      if (err) {
+        console.log(err)
+        res.status(500).send('Error deleting data')
+      } else {
+        res.status(200).send('Product successfully deleted !')
+      }
+    }
+  )
+})
+
 module.exports = router
