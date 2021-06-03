@@ -10,6 +10,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+app.use('/order', routes.order)
 app.use('/products', routes.products)
 app.use('/types', routes.types)
 app.use('/typegroups', routes.typegroups)
