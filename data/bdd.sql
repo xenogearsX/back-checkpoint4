@@ -25,7 +25,7 @@ USE `shop` ;
 -- Table `shop`.`account`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `shop`.`account` (
-  `idaccount` INT NOT NULL,
+  `idaccount` INT NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(200) NOT NULL,
   `password` VARCHAR(500) NOT NULL,
   `firstname` VARCHAR(45) NOT NULL,
