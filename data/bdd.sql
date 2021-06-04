@@ -15,19 +15,47 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `order`
---
+-- -----------------------------------------------------
+-- Schema shop
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `shop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `shop` ;
 
-DROP TABLE IF EXISTS `order`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `order` (
-  `idorder` int NOT NULL AUTO_INCREMENT,
-  `orderitems` varchar(5000) DEFAULT NULL,
-  PRIMARY KEY (`idorder`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- -----------------------------------------------------
+-- Table `shop`.`account`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `shop`.`account` (
+  `idaccount` INT NOT NULL,
+  `email` VARCHAR(200) NOT NULL,
+  `password` VARCHAR(500) NOT NULL,
+  `firstname` VARCHAR(45) NOT NULL,
+  `lastname` VARCHAR(45) NOT NULL,
+  `streetnumber` INT NOT NULL,
+  `streetname` VARCHAR(500) NOT NULL,
+  `zipcode` INT NOT NULL,
+  `city` VARCHAR(100) NOT NULL,
+  `country` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`idaccount`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `shop`.`order`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `shop`.`order` (
+  `idorder` INT NOT NULL AUTO_INCREMENT,
+  `orderitems` VARCHAR(5000) NOT NULL,
+  `account_idaccount` INT NOT NULL,
+  PRIMARY KEY (`idorder`),
+  INDEX `fk_order_account1_idx` (`account_idaccount` ASC) VISIBLE,
+  CONSTRAINT `fk_order_account1`
+    FOREIGN KEY (`account_idaccount`)
+    REFERENCES `shop`.`account` (`idaccount`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `order`
