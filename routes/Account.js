@@ -36,9 +36,9 @@ router.post('/', async (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error saving account')
+        res.status(500).send('Problème lors de la création de compte')
       }
-      res.status(200).send('Successfully saved account')
+      res.status(200).send('Création de compte réussie')
     }
   )
 })
@@ -63,7 +63,7 @@ router.post('/signin', (req, res) => {
           res.set('x-access-token', token)
           res.status(200).send({ details: 'user connected' })
         } else {
-          res.status(201).send('Failed')
+          res.status(201).send('failed')
         }
       }
     }
