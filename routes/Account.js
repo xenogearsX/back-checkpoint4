@@ -5,6 +5,18 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
+const getToken = req => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.split(' ')[0] === 'Bearer'
+  ) {
+    return req.headers.authorization.split(' ')[1]
+  } else if (req.query && req.query.token) {
+    return req.query.token
+  }
+  return null
+}
+
 router.post('/', async (req, res) => {
   const {
     email,
@@ -43,6 +55,21 @@ router.post('/', async (req, res) => {
   )
 })
 
+router.post('/protected', (req, res) => {
+  const token = getToken(req)
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log(err)
+      return res.status(200).send('echec')
+    }
+    console.log('decode', decoded)
+    return res
+      .status(202)
+      .send({ idAccount: decoded.idAccount, isAdmin: decoded.isAdmin })
+  })
+})
+module.exports = router
+
 router.post('/signin', (req, res) => {
   connection.query(
     'SELECT * from account WHERE email= ? ',
@@ -56,12 +83,16 @@ router.post('/signin', (req, res) => {
           bcrypt.compareSync(req.body.password, result[0].password)
         ) {
           const tokenUserinfo = {
-            email: req.body.email
+            idAccount: result[0].idaccount,
+            isAdmin: result[0].isadmin
           }
           const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET)
           res.header('Access-Control-Expose-Headers', 'x-access-token')
           res.set('x-access-token', token)
-          res.status(200).send({ idaccount: result[0].idaccount })
+          res.status(200).send({
+            idAccount: result[0].idaccount,
+            isAdmin: result[0].isadmin
+          })
         } else {
           res.status(201).send('failed')
         }
