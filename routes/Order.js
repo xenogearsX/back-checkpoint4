@@ -3,10 +3,10 @@ const connection = require('../config')
 const router = express.Router()
 
 router.post('/', (req, res) => {
-  const { orderitems } = req.body
+  const { orderitems, account_idaccount } = req.body
   connection.query(
-    'INSERT INTO shop.order (orderitems) VALUES(?)',
-    [orderitems],
+    'INSERT INTO shop.order (orderitems, account_idaccount) VALUES(?, ?)',
+    [orderitems, account_idaccount],
     err => {
       if (err) {
         console.log(err)
