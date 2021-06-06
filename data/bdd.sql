@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `shop`.`account` (
   `zipcode` INT NOT NULL,
   `city` VARCHAR(100) NOT NULL,
   `country` VARCHAR(100) NOT NULL,
+  `isadmin` TINYINT NULL,
   PRIMARY KEY (`idaccount`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB;
