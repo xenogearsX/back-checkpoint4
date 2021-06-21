@@ -77,25 +77,24 @@ router.post('/signin', (req, res) => {
     (err, result) => {
       if (err) {
         res.status(400).send('Impossible car :' + err)
-      } else {
-        if (
-          req.body.email === result[0].email &&
-          bcrypt.compareSync(req.body.password, result[0].password)
-        ) {
-          const tokenUserinfo = {
-            idAccount: result[0].idaccount,
-            isAdmin: result[0].isadmin
-          }
-          const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET)
-          res.header('Access-Control-Expose-Headers', 'x-access-token')
-          res.set('x-access-token', token)
-          res.status(200).send({
-            idAccount: result[0].idaccount,
-            isAdmin: result[0].isadmin
-          })
-        } else {
-          res.status(201).send('failed')
+      } else if (
+        result[0] &&
+        req.body.email === result[0].email &&
+        bcrypt.compareSync(req.body.password, result[0].password)
+      ) {
+        const tokenUserinfo = {
+          idAccount: result[0].idaccount,
+          isAdmin: result[0].isadmin
         }
+        const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET)
+        res.header('Access-Control-Expose-Headers', 'x-access-token')
+        res.set('x-access-token', token)
+        res.status(200).send({
+          idAccount: result[0].idaccount,
+          isAdmin: result[0].isadmin
+        })
+      } else {
+        res.status(201).send('failed')
       }
     }
   )
