@@ -31,43 +31,12 @@ router.get('/:id', (req, res) => {
   )
 })
 
-router.get('/filter/jewels', (req, res) => {
+router.get('/filter/:type', (req, res) => {
   connection.query(
     `SELECT * from product P JOIN type T ON T.idtype = P.type_idtype
     JOIN typegroup TP ON TP.idtypegroup = T.typegroup_idtypegroup
-    WHERE TP.groupname = 'Bijoux'`,
-    (err, results) => {
-      if (err) {
-        console.log(err)
-        res.status(500).send('Error retrieving data')
-      } else {
-        res.status(200).json(results)
-      }
-    }
-  )
-})
-
-router.get('/filter/clothes', (req, res) => {
-  connection.query(
-    `SELECT * from product P JOIN type T ON T.idtype = P.type_idtype
-    JOIN typegroup TP ON TP.idtypegroup = T.typegroup_idtypegroup
-    WHERE TP.groupname = 'Prêt-à-porter'`,
-    (err, results) => {
-      if (err) {
-        console.log(err)
-        res.status(500).send('Error retrieving data')
-      } else {
-        res.status(200).json(results)
-      }
-    }
-  )
-})
-
-router.get('/filter/bags', (req, res) => {
-  connection.query(
-    `SELECT * from product P JOIN type T ON T.idtype = P.type_idtype
-    JOIN typegroup TP ON TP.idtypegroup = T.typegroup_idtypegroup
-    WHERE TP.groupname = 'Maroquinerie'`,
+    WHERE TP.groupname = ?`,
+    [req.params.type],
     (err, results) => {
       if (err) {
         console.log(err)
