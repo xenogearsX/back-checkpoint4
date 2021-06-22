@@ -79,7 +79,6 @@ router.post('/signin', (req, res) => {
         res.status(400).send('Impossible car :' + err)
       } else if (
         result[0] &&
-        req.body.email === result[0].email &&
         bcrypt.compareSync(req.body.password, result[0].password)
       ) {
         const tokenUserinfo = {
