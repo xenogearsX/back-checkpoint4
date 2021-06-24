@@ -4,6 +4,28 @@ const nodemailer = require('nodemailer')
 const connection = require('../config')
 const router = express.Router()
 
+router.get('/:id', (req, res) => {
+  connection.query(
+    'SELECT * FROM shop.order WHERE account_idaccount = ? ',
+    [req.params.id],
+    (err, results) => {
+      if (err) {
+        console.log(err)
+        res.status(500).send('Error retrieving product')
+      } else {
+        const orderTemp = results.map(order => {
+          return {
+            idorder: order.idorder,
+            orderitems: JSON.parse(order.orderitems),
+            account_idaccount: order.account_idaccount
+          }
+        })
+        res.status(200).json(orderTemp)
+      }
+    }
+  )
+})
+
 router.post('/', (req, res) => {
   const { orderitems, account_idaccount, total } = req.body
 
