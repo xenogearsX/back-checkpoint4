@@ -17,6 +17,21 @@ const getToken = req => {
   return null
 }
 
+router.get('/:id', (req, res) => {
+  connection.query(
+    'SELECT * FROM account WHERE idaccount = ? ',
+    [req.params.id],
+    (err, results) => {
+      if (err) {
+        console.log(err)
+        res.status(500).send('Error retrieving account details')
+      } else {
+        res.status(200).json(results)
+      }
+    }
+  )
+})
+
 router.post('/', async (req, res) => {
   const {
     email,
@@ -95,6 +110,42 @@ router.post('/signin', (req, res) => {
       } else {
         res.status(201).send('failed')
       }
+    }
+  )
+})
+
+router.put('/:id', (req, res) => {
+  const {
+    email,
+    firstname,
+    lastname,
+    streetnumber,
+    streetname,
+    zipcode,
+    city,
+    country
+  } = req.body
+  connection.query(
+    `UPDATE shop.account SET email = ?, firstname = ?, lastname = ?, streetnumber = ?, streetname = ?, zipcode = ?, city = ?, country = ? WHERE (idaccount = ?)`,
+    [
+      email,
+      firstname,
+      lastname,
+      streetnumber,
+      streetname,
+      zipcode,
+      city,
+      country,
+      req.params.id
+    ],
+    err => {
+      if (err) {
+        res.status(500).json({
+          error: err.message,
+          sql: err.sql
+        })
+      }
+      res.status(200).send('Modification de compte réussie.')
     }
   )
 })
