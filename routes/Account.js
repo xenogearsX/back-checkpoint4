@@ -64,8 +64,9 @@ router.post('/', async (req, res) => {
       if (err) {
         console.log(err)
         res.status(500).send('Problème lors de la création de compte')
+      } else {
+        res.status(200).send('Création de compte réussie')
       }
-      res.status(200).send('Création de compte réussie')
     }
   )
 })
