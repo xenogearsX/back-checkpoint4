@@ -45,7 +45,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `shop`.`order` (
   `idorder` INT NOT NULL AUTO_INCREMENT,
+  `date` DATE NOT NULL,
   `orderitems` VARCHAR(5000) NOT NULL,
+  `total` INT NOT NULL,
   `account_idaccount` INT NOT NULL,
   PRIMARY KEY (`idorder`),
   INDEX `fk_order_account1_idx` (`account_idaccount` ASC) VISIBLE,
