@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `shop`.`account` (
   `country` VARCHAR(100) NOT NULL,
   `isadmin` TINYINT NULL,
   PRIMARY KEY (`idaccount`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+  UNIQUE KEY `email_UNIQUE` (`email`))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -87,6 +87,7 @@ CREATE TABLE `product` (
   `bigurl` varchar(255) NOT NULL,
   `type_idtype` int NOT NULL,
   PRIMARY KEY (`idproduct`),
+  UNIQUE KEY `name_UNIQUE` (`name`),
   KEY `fk_product_type_idx` (`type_idtype`),
   CONSTRAINT `fk_product_type` FOREIGN KEY (`type_idtype`) REFERENCES `type` (`idtype`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -114,6 +115,7 @@ CREATE TABLE `type` (
   `typename` varchar(45) NOT NULL,
   `typegroup_idtypegroup` int NOT NULL,
   PRIMARY KEY (`idtype`),
+  UNIQUE KEY `typename_UNIQUE` (`typename`),
   KEY `fk_type_typegroup1_idx` (`typegroup_idtypegroup`),
   CONSTRAINT `fk_type_typegroup1` FOREIGN KEY (`typegroup_idtypegroup`) REFERENCES `typegroup` (`idtypegroup`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -139,7 +141,8 @@ DROP TABLE IF EXISTS `typegroup`;
 CREATE TABLE `typegroup` (
   `idtypegroup` int NOT NULL AUTO_INCREMENT,
   `groupname` varchar(45) NOT NULL,
-  PRIMARY KEY (`idtypegroup`)
+  PRIMARY KEY (`idtypegroup`),
+  UNIQUE KEY `groupname_UNIQUE` (`groupname`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
