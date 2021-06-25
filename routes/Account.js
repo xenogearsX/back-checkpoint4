@@ -76,12 +76,13 @@ router.post('/protected', (req, res) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       console.log(err)
-      return res.status(200).send('echec')
+      res.status(200).send('echec')
+    } else {
+      console.log('decode', decoded)
+      res
+        .status(202)
+        .send({ idAccount: decoded.idAccount, isAdmin: decoded.isAdmin })
     }
-    console.log('decode', decoded)
-    return res
-      .status(202)
-      .send({ idAccount: decoded.idAccount, isAdmin: decoded.isAdmin })
   })
 })
 module.exports = router
@@ -145,8 +146,9 @@ router.put('/:id', (req, res) => {
           error: err.message,
           sql: err.sql
         })
+      } else {
+        res.status(200).send('Modification de compte réussie.')
       }
-      res.status(200).send('Modification de compte réussie.')
     }
   )
 })

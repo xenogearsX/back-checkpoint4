@@ -97,8 +97,9 @@ router.post('/', (req, res) => {
       if (err) {
         console.log(err)
         res.status(500).send('Error saving order')
+      } else {
+        res.status(200).send('Successfully saved order')
       }
-      res.status(200).send('Successfully saved order')
     }
   )
 })

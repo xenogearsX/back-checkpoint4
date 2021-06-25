@@ -37,8 +37,9 @@ router.post('/', (req, res) => {
       if (err) {
         console.log(err)
         res.status(500).send('Error saving typegroup')
+      } else {
+        res.status(200).send('Successfully saved typegroup')
       }
-      res.status(200).send('Successfully saved typegroup')
     }
   )
 })
@@ -67,13 +68,13 @@ router.put('/:id', (req, res) => {
               error: err3.message,
               sql: err3.sql
             })
+          } else {
+            const updatedTypeGroup = records[0]
+            const { ...typegroup } = updatedTypeGroup
+            const host = req.get('host')
+            const location = `http://${host}${req.url}/${typegroup.id}`
+            res.status(201).set('Location', location).json(typegroup)
           }
-
-          const updatedTypeGroup = records[0]
-          const { ...typegroup } = updatedTypeGroup
-          const host = req.get('host')
-          const location = `http://${host}${req.url}/${typegroup.id}`
-          res.status(201).set('Location', location).json(typegroup)
         }
       )
     }

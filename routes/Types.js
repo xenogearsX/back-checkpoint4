@@ -37,8 +37,9 @@ router.post('/', (req, res) => {
       if (err) {
         console.log(err)
         res.status(500).send('Error saving type')
+      } else {
+        res.status(200).send('Successfully saved type')
       }
-      res.status(200).send('Successfully saved type')
     }
   )
 })
@@ -50,32 +51,32 @@ router.put('/:id', (req, res) => {
   connection.query(
     'UPDATE type SET ? WHERE idtype = ?',
     [newType, idType],
-    err2 => {
-      if (err2) {
+    err => {
+      if (err) {
         res.status(500).json({
-          error: err2.message,
-          sql: err2.sql
+          error: err.message,
+          sql: err.sql
         })
-      }
-
-      connection.query(
-        'SELECT * FROM type  WHERE idtype = ?',
-        idType,
-        (err3, records) => {
-          if (err3) {
-            res.status(500).json({
-              error: err3.message,
-              sql: err3.sql
-            })
+      } else {
+        connection.query(
+          'SELECT * FROM type  WHERE idtype = ?',
+          idType,
+          (error, records) => {
+            if (error) {
+              res.status(500).json({
+                error: error.message,
+                sql: error.sql
+              })
+            } else {
+              const updatedType = records[0]
+              const { ...type } = updatedType
+              const host = req.get('host')
+              const location = `http://${host}${req.url}/${type.id}`
+              res.status(201).set('Location', location).json(type)
+            }
           }
-
-          const updatedType = records[0]
-          const { ...type } = updatedType
-          const host = req.get('host')
-          const location = `http://${host}${req.url}/${type.id}`
-          res.status(201).set('Location', location).json(type)
-        }
-      )
+        )
+      }
     }
   )
 })
