@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     (err, results) => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error retrieving data')
+        res.status(500).send('Erreur de réception des produits')
       } else {
         res.status(200).json(results)
       }
@@ -23,7 +23,7 @@ router.get('/:id', (req, res) => {
     (err, results) => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error retrieving product')
+        res.status(500).send('Erreur de réception du produit')
       } else {
         res.status(200).json(results)
       }
@@ -40,7 +40,7 @@ router.get('/filter/:type', (req, res) => {
     (err, results) => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error retrieving data')
+        res.status(500).send('Erreur de réception des produits')
       } else {
         res.status(200).json(results)
       }
@@ -74,9 +74,9 @@ router.post('/', (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error saving product')
+        res.status(500).send(err.message)
       } else {
-        res.status(200).send('Successfully saved product')
+        res.status(200).send('Produit sauvegardé')
       }
     }
   )
@@ -89,22 +89,16 @@ router.put('/:id', (req, res) => {
   connection.query(
     'UPDATE product SET ? WHERE idproduct = ?',
     [newProduct, idProduct],
-    err2 => {
-      if (err2) {
-        res.status(500).json({
-          error: err2.message,
-          sql: err2.sql
-        })
+    err => {
+      if (err) {
+        res.status(500).send(err.message)
       } else {
         connection.query(
           'SELECT * FROM product  WHERE idproduct = ?',
           idProduct,
-          (err3, records) => {
-            if (err3) {
-              res.status(500).json({
-                error: err3.message,
-                sql: err3.sql
-              })
+          (error, records) => {
+            if (error) {
+              res.status(500).send(error.message)
             } else {
               const updatedProduct = records[0]
               const { ...product } = updatedProduct
@@ -126,9 +120,9 @@ router.delete('/:id', (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error deleting data')
+        res.status(500).send(err.message)
       } else {
-        res.status(200).send('Product successfully deleted !')
+        res.status(200).send('Produit supprimé !')
       }
     }
   )

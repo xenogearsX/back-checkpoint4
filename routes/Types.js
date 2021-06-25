@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
   connection.query('SELECT * from type', (err, results) => {
     if (err) {
       console.log(err)
-      res.status(500).send('Error retrieving type')
+      res.status(500).send('Erreur de réception des types produit')
     } else {
       res.status(200).json(results)
     }
@@ -20,7 +20,7 @@ router.get('/:id', (req, res) => {
     (err, results) => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error retrieving type')
+        res.status(500).send('Erreur de réception du type produit')
       } else {
         res.status(200).json(results)
       }
@@ -36,9 +36,9 @@ router.post('/', (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error saving type')
+        res.status(500).send(err.message)
       } else {
-        res.status(200).send('Successfully saved type')
+        res.status(200).send('Sauvegarde réussie du type')
       }
     }
   )
@@ -53,20 +53,14 @@ router.put('/:id', (req, res) => {
     [newType, idType],
     err => {
       if (err) {
-        res.status(500).json({
-          error: err.message,
-          sql: err.sql
-        })
+        res.status(500).send(err.message)
       } else {
         connection.query(
           'SELECT * FROM type  WHERE idtype = ?',
           idType,
           (error, records) => {
             if (error) {
-              res.status(500).json({
-                error: error.message,
-                sql: error.sql
-              })
+              res.status(500).send(error.message)
             } else {
               const updatedType = records[0]
               const { ...type } = updatedType
@@ -88,9 +82,9 @@ router.delete('/:id', (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error deleting data')
+        res.status(500).send(err.message)
       } else {
-        res.status(200).send('Type successfully deleted !')
+        res.status(200).send('Type supprimé !')
       }
     }
   )

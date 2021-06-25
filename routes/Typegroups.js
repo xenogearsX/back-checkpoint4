@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
   connection.query('SELECT * from typegroup', (err, results) => {
     if (err) {
       console.log(err)
-      res.status(500).send('Error retrieving typegroup')
+      res.status(500).send('Erreur de reception des groupes produits')
     } else {
       res.status(200).json(results)
     }
@@ -20,7 +20,7 @@ router.get('/:id', (req, res) => {
     (err, results) => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error retrieving typegroup')
+        res.status(500).send('Erreur lors de la réception du groupe produit')
       } else {
         res.status(200).json(results)
       }
@@ -36,9 +36,9 @@ router.post('/', (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error saving typegroup')
+        res.status(500).send(err.message)
       } else {
-        res.status(200).send('Successfully saved typegroup')
+        res.status(200).send('Sauvegarde réussi du groupe produit')
       }
     }
   )
@@ -51,32 +51,26 @@ router.put('/:id', (req, res) => {
   connection.query(
     'UPDATE typegroup SET ? WHERE idtypegroup = ?',
     [newTypeGroup, idTypeGroup],
-    err2 => {
-      if (err2) {
-        res.status(500).json({
-          error: err2.message,
-          sql: err2.sql
-        })
-      }
-
-      connection.query(
-        'SELECT * FROM typegroup  WHERE idtypegroup = ?',
-        idTypeGroup,
-        (err3, records) => {
-          if (err3) {
-            res.status(500).json({
-              error: err3.message,
-              sql: err3.sql
-            })
-          } else {
-            const updatedTypeGroup = records[0]
-            const { ...typegroup } = updatedTypeGroup
-            const host = req.get('host')
-            const location = `http://${host}${req.url}/${typegroup.id}`
-            res.status(201).set('Location', location).json(typegroup)
+    err => {
+      if (err) {
+        res.status(500).send(err.message)
+      } else {
+        connection.query(
+          'SELECT * FROM typegroup  WHERE idtypegroup = ?',
+          idTypeGroup,
+          (error, records) => {
+            if (error) {
+              res.status(500).send(error.message)
+            } else {
+              const updatedTypeGroup = records[0]
+              const { ...typegroup } = updatedTypeGroup
+              const host = req.get('host')
+              const location = `http://${host}${req.url}/${typegroup.id}`
+              res.status(201).set('Location', location).json(typegroup)
+            }
           }
-        }
-      )
+        )
+      }
     }
   )
 })
@@ -88,9 +82,9 @@ router.delete('/:id', (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error deleting data')
+        res.status(500).send(err.message)
       } else {
-        res.status(200).send('Typegroup successfully deleted !')
+        res.status(200).send('Groupe produit supprimé !')
       }
     }
   )
