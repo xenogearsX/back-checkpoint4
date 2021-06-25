@@ -16,7 +16,9 @@ router.get('/:id', (req, res) => {
         const orderTemp = results.map(order => {
           return {
             idorder: order.idorder,
+            date: order.date.toLocaleDateString(),
             orderitems: JSON.parse(order.orderitems),
+            total: order.total,
             account_idaccount: order.account_idaccount
           }
         })
@@ -27,7 +29,7 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  const { orderitems, account_idaccount, total } = req.body
+  const { date, orderitems, total, account_idaccount } = req.body
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -41,12 +43,12 @@ router.post('/', (req, res) => {
     from: process.env.MAIL_LOGIN,
     to: [process.env.MAIL_LOGIN, 'xenogears@hotmail.fr'],
     subject: 'Votre commande sur Bibelot.com',
-    text: `Vous avez commandé :
+    text: `Vous avez commandé le ${date}:
           ${orderitems
             .map(item => item.name + ' x ' + item.quantity)
             .join(', ')} pour un total de ${total}€.`,
     html: `<div style="display:block;font-size:1rem;margin:auto;width:100%;">
-            <h1 style="width:50%;">Votre commande</h1>
+            <h1 style="width:50%;">Votre commande du ${date}</h1>
             <table style="width:80%;">
               <thead>
                 <tr>
@@ -84,8 +86,13 @@ router.post('/', (req, res) => {
   })
 
   connection.query(
-    'INSERT INTO shop.order (orderitems, account_idaccount) VALUES(?, ?)',
-    [JSON.stringify(orderitems), account_idaccount],
+    'INSERT INTO shop.order (date, orderitems, total, account_idaccount) VALUES(?, ?, ?, ?)',
+    [
+      date.split('/').reverse().join('-'),
+      JSON.stringify(orderitems),
+      total,
+      account_idaccount
+    ],
     err => {
       if (err) {
         console.log(err)
