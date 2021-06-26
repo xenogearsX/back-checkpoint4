@@ -24,7 +24,7 @@ router.get('/:id', (req, res) => {
     (err, results) => {
       if (err) {
         console.log(err)
-        res.status(500).send('Error retrieving account details')
+        res.status(500).send('Erreur de réception du compte')
       } else {
         res.status(200).json(results)
       }
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
     err => {
       if (err) {
         console.log(err)
-        res.status(500).send('Problème lors de la création de compte')
+        res.status(500).send(err.message)
       } else {
         res.status(200).send('Création de compte réussie')
       }
@@ -142,10 +142,7 @@ router.put('/:id', (req, res) => {
     ],
     err => {
       if (err) {
-        res.status(500).json({
-          error: err.message,
-          sql: err.sql
-        })
+        res.status(500).send(err.message)
       } else {
         res.status(200).send('Modification de compte réussie.')
       }
