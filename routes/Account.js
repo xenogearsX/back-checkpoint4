@@ -7,10 +7,10 @@ const bcrypt = require('bcrypt')
 
 const getToken = req => {
   if (
-    req.headers.authorization &&
-    req.headers.authorization.split(' ')[0] === 'Bearer'
+    req.body.authorization &&
+    req.body.authorization.split(' ')[0] === 'Bearer'
   ) {
-    return req.headers.authorization.split(' ')[1]
+    return req.body.authorization.split(' ')[1]
   } else if (req.query && req.query.token) {
     return req.query.token
   }
@@ -76,7 +76,7 @@ router.post('/protected', (req, res) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       console.log(err)
-      res.status(200).send('echec')
+      res.status(200).send(err.message)
     } else {
       console.log('decode', decoded)
       res
@@ -102,7 +102,9 @@ router.post('/signin', (req, res) => {
           idAccount: result[0].idaccount,
           isAdmin: result[0].isadmin
         }
-        const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET)
+        const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET, {
+          expiresIn: 10
+        })
         res.header('Access-Control-Expose-Headers', 'x-access-token')
         res.set('x-access-token', token)
         res.status(200).send({
