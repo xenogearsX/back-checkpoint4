@@ -102,9 +102,7 @@ router.post('/signin', (req, res) => {
           idAccount: result[0].idaccount,
           isAdmin: result[0].isadmin
         }
-        const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET, {
-          expiresIn: 10
-        })
+        const token = jwt.sign(tokenUserinfo, process.env.JWT_SECRET)
         res.header('Access-Control-Expose-Headers', 'x-access-token')
         res.set('x-access-token', token)
         res.status(200).send({
