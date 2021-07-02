@@ -1,9 +1,10 @@
 require('dotenv').config()
 const express = require('express')
-const connection = require('../config')
-const router = express.Router()
-const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const connection = require('../config')
+const nodemailer = require('nodemailer')
+const jwt = require('jsonwebtoken')
+const router = express.Router()
 
 const getToken = req => {
   if (
@@ -71,6 +72,65 @@ router.post('/', async (req, res) => {
   )
 })
 
+router.post('/forgot', (req, res) => {
+  connection.query(
+    'SELECT * FROM account WHERE email = ? ',
+    [req.body.email],
+    (err, result) => {
+      if (err) {
+        res.status(500).send('Impossible car :' + err)
+      } else if (result[0]) {
+        const userInfo = {
+          idAccount: result[0].idaccount
+        }
+        const params = jwt.sign(userInfo, process.env.JWT_SECRET, {
+          expiresIn: 3600
+        })
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.MAIL_LOGIN,
+            pass: process.env.MAIL_PASSWORD
+          }
+        })
+
+        const mailOptions = {
+          from: process.env.MAIL_LOGIN,
+          to: 'xenogears@hotmail.fr',
+          subject: 'Réinitialisation de votre mot de passe bibelot.com',
+          text: `Réinitialisation de votre mot de passe demandé le ${new Date().toLocaleDateString()}
+                Veuillez suivre ce lien http://localhost:3000/forgot/${params}`,
+          html: `<div style="display:block;font-size:1rem;margin:auto;width:100%;">
+                  <h1 style="width:100%;">Réinitialisation de votre mot de passe demandé le ${new Date().toLocaleDateString()}</h1>
+                  <a href="http://localhost:3000/forgot/${params}">Lien de réinitilisation valable une heure</a>
+                  <p>Si vous n'êtes pas à l'origine de cette réinitialisation, contactez-nous <a href="mailto:${
+                    process.env.MAIL_LOGIN
+                  }">Admin Bibelot.com</a></p>
+                </div>`
+        }
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error)
+          } else {
+            console.log('Email sent: ' + info.response)
+          }
+        })
+
+        res
+          .status(200)
+          .send(`Email de réinitialisation envoyé à ${req.body.email}`)
+      } else {
+        console.log('Email not recognized')
+        res
+          .status(200)
+          .send(`Email de réinitialisation envoyé à ${req.body.email}`)
+      }
+    }
+  )
+})
+
 router.post('/protected', (req, res) => {
   const token = getToken(req)
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
@@ -85,7 +145,6 @@ router.post('/protected', (req, res) => {
     }
   })
 })
-module.exports = router
 
 router.post('/signin', (req, res) => {
   connection.query(
@@ -93,7 +152,7 @@ router.post('/signin', (req, res) => {
     [req.body.email],
     (err, result) => {
       if (err) {
-        res.status(400).send('Impossible car :' + err)
+        res.status(500).send('Impossible car :' + err)
       } else if (
         result[0] &&
         bcrypt.compareSync(req.body.password, result[0].password)
