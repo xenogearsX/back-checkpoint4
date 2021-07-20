@@ -31,6 +31,21 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   const { date, orderitems, total, account_idaccount } = req.body
 
+  //connection query to uncomment before prod
+  //move line 45-47 to beginning of line 120
+
+  // connection.query(
+  //   'SELECT email FROM shop.order WHERE account_idaccount = ? ',
+  //   [account_idaccount],
+  //   (err, results) => {
+  //     if (err) {
+  //       console.log(err)
+  //       res.status(500).send('Error retrieving email')
+  //     } else {
+  //     }
+  //   }
+  // )
+
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -41,7 +56,7 @@ router.post('/', (req, res) => {
 
   const mailOptions = {
     from: process.env.MAIL_LOGIN,
-    to: [process.env.MAIL_LOGIN, 'xenogears@hotmail.fr'],
+    to: [process.env.MAIL_LOGIN, process.env.TEST_EMAIL], //change email to query results before prod
     subject: 'Votre commande sur Bibelot.com',
     text: `Vous avez commandé le ${date}:
           ${orderitems
