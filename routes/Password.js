@@ -43,7 +43,7 @@ router.post('/forgot', (req, res) => {
 
         const mailOptions = {
           from: process.env.MAIL_LOGIN,
-          to: 'xenogears@hotmail.fr',
+          to: 'xenogears@hotmail.fr', //replace with req.body.email before prod
           subject: 'Réinitialisation de votre mot de passe bibelot.com',
           text: `Réinitialisation de votre mot de passe demandé le ${new Date().toLocaleDateString()}
                 Veuillez suivre ce lien http://localhost:3000/forgot/${params}`,
@@ -77,7 +77,7 @@ router.post('/forgot', (req, res) => {
   )
 })
 
-router.post('/change', async (req, res) => {
+router.post('/reset', async (req, res) => {
   const { password, idAccount } = req.body
   const salt = await bcrypt.genSalt()
   const hashedPassword = await bcrypt.hash(password, salt)
