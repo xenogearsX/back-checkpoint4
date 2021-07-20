@@ -31,38 +31,31 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   const { date, orderitems, total, account_idaccount } = req.body
 
-  //connection query to uncomment before prod
-  //move line 45-47 to beginning of line 120
+  connection.query(
+    'SELECT email FROM shop.account WHERE idaccount = ? ',
+    [account_idaccount],
+    (err, results) => {
+      if (err) {
+        console.log(err)
+        res.status(500).send('Erreur pour trouver votre email')
+      } else {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.MAIL_LOGIN,
+            pass: process.env.MAIL_PASSWORD
+          }
+        })
 
-  // connection.query(
-  //   'SELECT email FROM shop.order WHERE account_idaccount = ? ',
-  //   [account_idaccount],
-  //   (err, results) => {
-  //     if (err) {
-  //       console.log(err)
-  //       res.status(500).send('Error retrieving email')
-  //     } else {
-  //     }
-  //   }
-  // )
-
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.MAIL_LOGIN,
-      pass: process.env.MAIL_PASSWORD
-    }
-  })
-
-  const mailOptions = {
-    from: process.env.MAIL_LOGIN,
-    to: [process.env.MAIL_LOGIN, process.env.TEST_EMAIL], //change email to query results before prod
-    subject: 'Votre commande sur Bibelot.com',
-    text: `Vous avez commandé le ${date}:
+        const mailOptions = {
+          from: process.env.MAIL_LOGIN,
+          to: [process.env.MAIL_LOGIN, process.env.TEST_EMAIL], //change email to results[0].email before prod
+          subject: 'Votre commande sur Bibelot.com',
+          text: `Vous avez commandé le ${date}:
           ${orderitems
             .map(item => item.name + ' x ' + item.quantity)
             .join(', ')} pour un total de ${total}€.`,
-    html: `<div style="display:block;font-size:1rem;margin:auto;width:100%;">
+          html: `<div style="display:block;font-size:1rem;margin:auto;width:100%;">
             <h1 style="width:50%;">Votre commande du ${date}</h1>
             <table style="width:80%;">
               <thead>
@@ -90,30 +83,33 @@ router.post('/', (req, res) => {
            </tbody>
          </table>
        </div>`
-  }
+        }
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error)
-    } else {
-      console.log('Email sent: ' + info.response)
-    }
-  })
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error)
+          } else {
+            console.log('Email sent: ' + info.response)
+          }
+        })
 
-  connection.query(
-    'INSERT INTO shop.order (date, orderitems, total, account_idaccount) VALUES(?, ?, ?, ?)',
-    [
-      date.split('/').reverse().join('-'),
-      JSON.stringify(orderitems),
-      total,
-      account_idaccount
-    ],
-    err => {
-      if (err) {
-        console.log(err)
-        res.status(500).send('Error saving order')
-      } else {
-        res.status(200).send('Successfully saved order')
+        connection.query(
+          'INSERT INTO shop.order (date, orderitems, total, account_idaccount) VALUES(?, ?, ?, ?)',
+          [
+            date.split('/').reverse().join('-'),
+            JSON.stringify(orderitems),
+            total,
+            account_idaccount
+          ],
+          err => {
+            if (err) {
+              console.log(err)
+              res.status(500).send('Problème lors de la commande')
+            } else {
+              res.status(200).send('Commande passée avec succès')
+            }
+          }
+        )
       }
     }
   )
